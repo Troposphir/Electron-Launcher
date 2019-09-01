@@ -118,7 +118,11 @@ export default {
             return JSON.stringify(this.outputJson)
         }
     },
-    mounted: function() {},
+    mounted: function() {
+        if (os.platform() === 'darwin') {
+            this.launch = 'open Atmosphir.app'
+        }
+    },
     methods: {
         bundle() {
             this.doBundle

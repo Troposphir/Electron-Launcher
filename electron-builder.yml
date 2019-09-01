@@ -1,6 +1,10 @@
 productName: 'Atmosphir'
+appId: com.onemoreblock.atmosphir-electron-launcher
 nsis:
   artifactName: '${productName}-Setup-${version}.${ext}'
 win:
-  publish:
-    - github
+    publish:
+        - github
+mac:
+    publish:
+        - github

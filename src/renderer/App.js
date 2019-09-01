@@ -14,9 +14,9 @@ import 'bootstrap/scss/bootstrap.scss'
 document.title = 'Atmosphir Launcher'
 
 const fonts = {
-    'Whitney Semibold': 'Whitney-Semibold.ttf',
+    'Whitney Semibold': 'Whitney-Semibold.otf',
     'Whitney Book': 'Whitney-Book.otf',
-    'Whitney Medium': 'Whitney-Medium.ttf'
+    'Whitney Medium': 'Whitney-Medium.otf'
 }
 for (const fontName in fonts) {
     const font = new FontFace(
