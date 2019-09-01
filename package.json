@@ -6,7 +6,7 @@
     "url" : "https://github.com/Troposphir/Electron-Launcher.git"
   },
   "author": "Troposphir Devs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "scripts": {
     "dev-server": "http-server --cors -c-1 -p 7070 ./server_example",

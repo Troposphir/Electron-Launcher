@@ -3,7 +3,7 @@
         id="background"
         :style="{
             'background-image':
-                'url(\'' +
+                'url(' +
                 getStatic('background.jpg').replace(/\\/g, '\\\\') +
                 '\')'
         }"
