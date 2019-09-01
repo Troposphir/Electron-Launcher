@@ -1,13 +1,20 @@
 <template>
     <div class="container">
         <div class="form-group pt-3">
-            <label>Current Launcher URL</label>
-            <input
-                v-model="indexUrl"
-                type="text"
-                :disabled="bundling"
-                class="form-control"
-            />
+            <label>Current Launcher Data Source</label>
+            <div class="input-group">
+                <input
+                    v-model="indexUrl"
+                    type="text"
+                    :disabled="bundling"
+                    class="form-control"
+                />
+                <div class="input-group-append">
+                    <span id="basic-addon2" class="input-group-text">
+                        /index.json
+                    </span>
+                </div>
+            </div>
         </div>
         <div class="form-group">
             <label>New Version Number</label>
@@ -17,6 +24,22 @@
                 :disabled="bundling"
                 class="form-control"
             />
+        </div>
+        <div class="form-group">
+            <label>Asset Root</label>
+            <div class="input-group">
+                <input
+                    v-model="assetRoot"
+                    type="text"
+                    :disabled="bundling"
+                    class="form-control"
+                />
+                <div class="input-group-append">
+                    <span id="basic-addon2" class="input-group-text">
+                        /{{ newVersion }}/
+                    </span>
+                </div>
+            </div>
         </div>
         <div class="form-group">
             <label>Folder to Bundle</label>
@@ -72,6 +95,7 @@ import fs from 'fs'
 import Config from '../Config'
 import rimraf from 'rimraf'
 import crypto from 'crypto'
+import os from 'os'
 
 const config = new Config()
 
@@ -80,6 +104,8 @@ export default {
         return {
             indexUrl: config.get('server'),
             newVersion: '1.0.0',
+            assetRoot:
+                'https://troposphir.s3.amazonaws.com/launcher/' + os.platform(),
             folder: path.join(process.cwd(), 'bundle_me'),
             launch: 'Atmosphir_Data/Atmosphir.exe standalone',
 
@@ -105,6 +131,7 @@ export default {
             this.outputJson = {
                 version: this.newVersion + '',
                 launch: this.launch.split(' '),
+                asset_root: this.assetRoot,
                 deleted_files: [],
                 updated_files: []
             }

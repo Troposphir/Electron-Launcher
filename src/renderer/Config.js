@@ -8,21 +8,17 @@ export default class Config {
             this.data = JSON.parse(fs.readFileSync(this.fileName))
 
         if (!this.has('version')) this.set('version', '0.0.0')
-        if (!this.has('version')) this.set('version', '0.0.0')
+        if (!this.has('launch'))
+            this.set('launch', ['Atmosphir_Data/Atmosphir.exe', 'standalone'])
         if (!this.has('asset_path')) this.set('asset_path', 'game/')
         if (!this.has('server')) {
             if (process.env.NODE_ENV === 'production')
                 this.set(
                     'server',
                     'https://onemoreblock.com/Atmosphir/launcher2019/' +
-                        process.platform +
-                        '/index.json'
+                        process.platform
                 )
-            else
-                this.set(
-                    'server',
-                    'http://localhost:7070/' + process.platform + '/index.json'
-                )
+            else this.set('server', 'http://localhost:7070/' + process.platform)
         }
     }
 

@@ -1,12 +1,14 @@
 {
   "name": "atmosphir-launcher",
+  "description": "Application to update and launch Atmosphir.",
+  "author": "Troposphir Devs",
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
     "dev-server": "http-server --cors -c-1 -p 7070 ./server_example",
     "dev": "electron-webpack dev",
     "compile": "electron-webpack",
-    "dist": "yarn compile && electron-builder -w portable",
+    "dist": "yarn compile && electron-builder --config",
     "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
   },
   "dependencies": {
@@ -36,6 +38,7 @@
     "sass-loader": "^8.0.0",
     "semver": "^6.3.0",
     "style-loader": "^1.0.0",
+    "url-join": "^4.0.1",
     "vue": "^2.6.10",
     "vue-router": "^3.1.3",
     "webpack": "~4.35.3"

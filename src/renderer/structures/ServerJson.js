@@ -39,6 +39,7 @@ export default class ServerJson {
                 latestVersion.updatedFiles.push(updatedFile.clone())
             }
 
+            latestVersion.assetRoot = version.assetRoot
             latestVersion.versionNumber = version.versionNumber
             latestVersion.launch = version.launch
         }
@@ -50,6 +51,7 @@ export default class ServerJson {
 export class ApplicationVersion {
     constructor(json = undefined) {
         if (json) {
+            this.assetRoot = json.asset_root
             this.updatedFiles = json.updated_files.map(
                 file => new ApplicationFile(file)
             )

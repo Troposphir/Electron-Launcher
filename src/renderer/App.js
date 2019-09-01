@@ -16,8 +16,7 @@ document.title = 'Atmosphir Launcher'
 const fonts = {
     'Whitney Semibold': 'Whitney-Semibold.ttf',
     'Whitney Book': 'Whitney-Book.otf',
-    'Whitney Medium': 'Whitney-Medium.ttf',
-    FiraSans: 'FiraSans-Thin.otf'
+    'Whitney Medium': 'Whitney-Medium.ttf'
 }
 for (const fontName in fonts) {
     const font = new FontFace(
@@ -43,12 +42,13 @@ const router = new VueRouter({
 })
 
 const config = new Config()
+const window = require('electron').remote.getCurrentWindow()
 if (config.has('dev') && config.get('dev')) {
     router.replace('/bundler')
-    require('electron')
-        .remote.getCurrentWindow()
-        .setSize(700, 700)
+    window.setSize(700, 700)
 } else router.replace('/')
+
+if (config.has('devTools')) window.webContents.openDevTools()
 
 const app = new Vue({
     router,

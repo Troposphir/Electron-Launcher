@@ -10,28 +10,47 @@
     >
         <div class="container">
             <h1 class="display-4 text-center vertical">
-                <img :src="getStatic('logo_atmosphir_preunity.svg')" />
+                <div class="image">
+                    <img id="gears" :src="getStatic('logo_gears.svg')" />
+                    <img id="center" :src="getStatic('logo_center.svg')" />
+                </div>
                 <span class="align-middle pl-2">Atmosphir</span>
             </h1>
 
-            <div id="progress" class="progress">
-                <div
-                    class="progress-bar progress-bar-striped progress-bar-animated"
-                    :class="{ 'bg-danger': error }"
-                    role="progressbar"
-                    :aria-valuenow="progressPercent"
-                    aria-valuemin="0"
-                    aria-valuemax="100"
-                    :style="{ width: progressPercent + '%' }"
-                >
-                    <span v-if="!error">
-                        {{ progressPercent.toFixed(0) }}%
-                    </span>
+            <span v-if="!error">
+                <div id="progress" class="progress">
+                    <div
+                        class="progress-bar progress-bar-striped progress-bar-animated"
+                        :class="{ 'bg-danger': error }"
+                        role="progressbar"
+                        :aria-valuenow="progressPercent"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                        :style="{ width: progressPercent + '%' }"
+                    >
+                        <span v-if="!error">
+                            {{ progressPercent.toFixed(0) }}%
+                        </span>
+                    </div>
+                </div>
+                <span id="status">
+                    {{ loadingMessage }}
+                </span>
+            </span>
+
+            <div v-if="error" id="error" class="form-row">
+                <label class="col-form-label col-8 text-danger">{{
+                    errorMessage
+                }}</label>
+                <div class="col-4">
+                    <button
+                        class="btn btn-success w-100"
+                        @click="offlineLaunch"
+                    >
+                        Launch Game
+                    </button>
                 </div>
             </div>
-            <span id="status">
-                {{ loadingMessage }}
-            </span>
         </div>
     </div>
 </template>
@@ -44,6 +63,15 @@ html {
 </style>
 
 <style scoped>
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 * {
     font-family: 'Whitney Semibold';
     color: white;
@@ -57,6 +85,10 @@ html {
 }
 
 #progress {
+    margin-top: 4rem;
+}
+
+#error {
     margin-top: 4rem;
 }
 
@@ -78,9 +110,33 @@ h1 {
     padding-top: 2.75rem;
 }
 
-h1 img {
-    max-width: 4.5rem;
-    max-height: 4.5rem;
+h1 .image {
+    max-width: 5rem;
+    max-height: 5rem;
+    position: relative;
+    font-size: 0;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+h1 .image img {
+    width: 5rem;
+    height: 5rem;
+}
+
+.image #gears {
+    animation-name: spin;
+    animation-iteration-count: infinite;
+    animation-duration: 8000ms;
+    animation-timing-function: linear;
+}
+
+.image #center {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
 }
 </style>
 
@@ -92,9 +148,10 @@ import { remote } from 'electron'
 import semver from 'semver'
 import fs from 'fs'
 import path from 'path'
-import url from 'url'
 import { spawn } from 'child_process'
 import Config from '../Config'
+import urljoin from 'url-join'
+import crypto from 'crypto'
 
 const config = new Config()
 
@@ -107,6 +164,7 @@ export default {
 
             error: false,
             loadingMessage: '',
+            errorMessage: 'Failed to update.',
             serverJson: null,
 
             taskIndex: -1,
@@ -158,16 +216,23 @@ export default {
             const task = this.tasks[this.taskIndex]
             if ('display' in task) this.loadingMessage = task['display']
 
-            const result = await task.method.bind(this)()
-            console.log(result)
-            if (!result) return this.failed()
+            try {
+                const result = await task.method.bind(this)()
+                if (!result) {
+                    this.failed()
+                    return false
+                }
+            } catch {
+                this.failed()
+                return false
+            }
 
             this.taskProgress = 1
             if (this.taskIndex + 1 == this.tasks.length)
                 return this.finishedLoading()
             else return this.nextTask()
         },
-        async failed() {
+        failed() {
             this.error = true
         },
         async finishedLoading() {
@@ -177,19 +242,26 @@ export default {
                 cwd: config.get('asset_path'),
                 detached: true
             })
-            if (process.env.NODE_ENV === 'production') {
-                // nothing
-            }
-            remote.app.quit()
+            if (!config.has('devTools')) remote.app.quit()
             return true
+        },
+        offlineLaunch() {
+            const launch = config.get('launch')
+            // launch anyway
+            spawn(launch[0], launch.length > 1 ? launch.slice(1) : [], {
+                cwd: config.get('asset_path'),
+                detached: true
+            })
+            if (!config.has('devTools')) remote.app.quit()
         },
 
         async task_downloadIndex() {
-            const response = await axios.get(config.get('server'), {
+            const indexUrl = urljoin(config.get('server'), 'index.json')
+            const response = await axios.get(indexUrl, {
                 responseType: 'json'
             })
             this.serverJson = new ServerJson(response.data)
-            console.log(remote.app.getVersion())
+            config.set('launch', this.serverJson.latestVersion.launch)
             if (
                 semver.parse(remote.app.getVersion()) <
                 this.serverJson.launcherVersion.toString()
@@ -206,12 +278,8 @@ export default {
 
             const currentVersionNumber = semver.parse(config.get('version'))
             if (currentVersionNumber >= latestVersion.versionNumber) {
-                this.loadingMessage = 'Up to date!'
-                return true
+                this.loadingMessage = 'Checking files...'
             }
-
-            // do update
-            config.set('version', latestVersion.versionNumber.toString())
 
             // delete files
             for (const deleteFile of latestVersion.deletedFiles) {
@@ -240,24 +308,42 @@ export default {
                     'Downloading ' + updateFile.clientLocation + '...'
 
                 if (fs.existsSync(filePath)) {
-                    fs.unlinkSync(filePath)
+                    const sha1Hash = crypto
+                        .createHash('sha1')
+                        .update(fs.readFileSync(filePath))
+                        .digest('hex')
+                    if (sha1Hash === updateFile.sha1Hash) {
+                        // this file is good, skip!
+                        continue
+                    } else {
+                        // if the file changed, delete it and redownload
+                        fs.unlinkSync(filePath)
+                    }
                 }
 
-                const response = await axios.get(
-                    url.resolve(config.get('server'), updateFile.serverPath),
-                    {
-                        responseType: 'arraybuffer',
-                        onDownloadProgress: e => {
-                            this.taskProgress =
-                                (totalDownloaded + e.loaded) / totalDownloadSize
-                        }
-                    }
+                let remoteUrl = urljoin(
+                    latestVersion.assetRoot,
+                    updateFile.serverPath
                 )
+                if (!remoteUrl.startsWith('http')) {
+                    remoteUrl = urljoin(config.get('server'), remoteUrl)
+                }
+                const response = await axios.get(remoteUrl, {
+                    responseType: 'arraybuffer',
+                    onDownloadProgress: e => {
+                        this.taskProgress =
+                            (totalDownloaded + e.loaded) / totalDownloadSize
+                    }
+                })
                 if (!fs.existsSync(path.dirname(filePath)))
                     fs.mkdirSync(path.dirname(filePath), { recursive: true })
                 fs.writeFileSync(filePath, new Uint8Array(response.data))
                 totalDownloaded += updateFile.size
             }
+
+            // mark as updated
+            config.set('version', latestVersion.versionNumber.toString())
+
             return true
         }
     }
