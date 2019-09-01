@@ -13,7 +13,8 @@ function createMainWindow() {
     const window = new BrowserWindow({
         webPreferences: { nodeIntegration: true },
         width: 700,
-        height: 300
+        height: 300,
+        title: 'Atmosphir Launcher'
     })
 
     if (isDevelopment) {

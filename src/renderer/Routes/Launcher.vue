@@ -3,9 +3,9 @@
         id="background"
         :style="{
             'background-image':
-                'url(' +
+                'url(\'' +
                 getStatic('background.jpg').replace(/\\/g, '\\\\') +
-                ')'
+                '\')'
         }"
     >
         <div class="container">
@@ -222,7 +222,8 @@ export default {
                     this.failed()
                     return false
                 }
-            } catch {
+            } catch (e) {
+                console.log(e)
                 this.failed()
                 return false
             }
@@ -256,7 +257,10 @@ export default {
         },
 
         async task_downloadIndex() {
-            const indexUrl = urljoin(config.get('server'), 'index.json')
+            const indexUrl =
+                urljoin(config.get('server'), 'index.json') +
+                '?' +
+                new Date().getTime()
             const response = await axios.get(indexUrl, {
                 responseType: 'json'
             })
@@ -266,7 +270,7 @@ export default {
                 semver.parse(remote.app.getVersion()) <
                 this.serverJson.launcherVersion.toString()
             ) {
-                this.loadingMessage =
+                this.errorMessage = this.loadingMessage =
                     'A new launcher version has been released. Please update to continue.'
                 return false
             } else {
