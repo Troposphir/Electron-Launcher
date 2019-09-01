@@ -1,4 +1,6 @@
 productName: 'Atmosphir'
+nsis:
+  artifactName: '${productName}-Setup-${version}.${ext}'
 win:
   publish:
     - github

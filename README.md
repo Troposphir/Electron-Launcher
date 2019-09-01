@@ -31,7 +31,6 @@ All installations will auto-update when you create a new release on github with 
 2. Run `yarn dist`
 3. Create a new release on github with the correct `version` (prefixed by a "v", so `v1.0.0`)
 4. Upload `Atmosphir Setup x.x.x.exe` and `latest.yml`
-5. Make sure you rename `Atmosphir Setup x.x.x.exe` to match what's stated in `latest.yml`!!! Github will try to convert the spaces to periods, but they need to be dashes (`-`)
 6. Publish the release
 
 ## Development
