@@ -6,3 +6,4 @@ thumbs.db
 game/
 .vscode/
 bundle_me
+config.json
