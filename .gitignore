@@ -1,0 +1,8 @@
+.DS_Store
+dist/
+node_modules/
+thumbs.db
+.idea/
+game/
+.vscode/
+bundle_me
