@@ -271,7 +271,7 @@ export default {
                 this.serverJson.launcherVersion.toString()
             ) {
                 this.errorMessage = this.loadingMessage =
-                    'A new launcher version has been released. Please update to continue.'
+                    'Please restart launcher to apply new update.'
                 return false
             } else {
                 return true

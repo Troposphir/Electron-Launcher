@@ -1,1 +1,4 @@
 productName: 'Atmosphir'
+win:
+  publish:
+    - github
