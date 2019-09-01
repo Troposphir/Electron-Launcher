@@ -21,7 +21,7 @@ const fonts = {
 for (const fontName in fonts) {
     const font = new FontFace(
         fontName,
-        "url('" + getStatic(fonts[fontName]) + "')"
+        "url('" + getStatic(fonts[fontName]).replace(/\\/g, '\\\\') + "')"
     )
     font.load()
         .then(() => {

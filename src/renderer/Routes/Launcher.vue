@@ -3,7 +3,7 @@
         id="background"
         :style="{
             'background-image':
-                'url(' +
+                'url(\'' +
                 getStatic('background.jpg').replace(/\\/g, '\\\\') +
                 '\')'
         }"
@@ -44,6 +44,7 @@
                 }}</label>
                 <div class="col-4">
                     <button
+                        v-if="!hideLaunch"
                         class="btn btn-success w-100"
                         @click="offlineLaunch"
                     >
@@ -162,6 +163,7 @@ export default {
 
             tasks: [],
 
+            hideLaunch: false,
             error: false,
             loadingMessage: '',
             errorMessage: 'Failed to update.',
@@ -270,6 +272,7 @@ export default {
                 semver.parse(remote.app.getVersion()) <
                 this.serverJson.launcherVersion.toString()
             ) {
+                this.hideLaunch = true
                 this.errorMessage = this.loadingMessage =
                     'Please restart launcher to apply new update.'
                 return false

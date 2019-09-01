@@ -2,11 +2,11 @@
   "name": "atmosphir-launcher",
   "description": "Application to update and launch Atmosphir.",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/Troposphir/Electron-Launcher.git"
+    "type": "git",
+    "url": "https://github.com/Troposphir/Electron-Launcher.git"
   },
   "author": "Troposphir Devs",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "license": "MIT",
   "scripts": {
     "dev-server": "http-server --cors -c-1 -p 7070 ./server_example",
@@ -25,6 +25,7 @@
     "electron": "5.0.6",
     "electron-builder": "^21.0.11",
     "electron-json-config": "^1.5.3",
+    "electron-log": "^3.0.7",
     "electron-updater": "^4.1.2",
     "electron-webpack": "^2.7.4",
     "electron-webpack-eslint": "^5.0.1",
